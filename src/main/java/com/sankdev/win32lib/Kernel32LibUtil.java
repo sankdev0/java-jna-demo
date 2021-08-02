@@ -23,13 +23,37 @@ public class Kernel32LibUtil {
     return Native.toString(lpBuffer);
   }
 
-  public static String getWindowsDirectoryW() {
+  public static String getWindowsDirectory() {
     char[] lpBuffer = new char[WinBase.MAX_PATH];
     int uSize = lpBuffer.length;
 
     if (Kernel32Lib.INSTANCE.GetWindowsDirectoryW(lpBuffer, uSize) == 0) {
       throw new RuntimeException(
           "Failed to retrieve the path of the Windows directory using win32 api");
+    }
+
+    return Native.toString(lpBuffer);
+  }
+
+  public static String getSystemDirectory() {
+    char[] lpBuffer = new char[WinBase.MAX_PATH];
+    int uSize = lpBuffer.length;
+
+    if (Kernel32Lib.INSTANCE.GetSystemDirectoryW(lpBuffer, uSize) == 0) {
+      throw new RuntimeException("Failed to retrieve the path of the system directory using win32"
+          + " api");
+    }
+
+    return Native.toString(lpBuffer);
+  }
+
+  public static String getTempPath() {
+    char[] lpBuffer = new char[WinBase.MAX_PATH];
+    int nBufferLength = lpBuffer.length;
+
+    if (Kernel32Lib.INSTANCE.GetTempPathW(nBufferLength, lpBuffer) == 0) {
+      throw new RuntimeException("Failed to retrieve the path of the directory designated for"
+          + "temporary files using win32 api");
     }
 
     return Native.toString(lpBuffer);
