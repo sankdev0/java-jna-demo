@@ -1,5 +1,6 @@
 package com.sankdev.win32lib;
 
+import com.sankdev.win32lib.Kernel32Lib._OSVERSIONINFO;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.ptr.IntByReference;
@@ -57,5 +58,21 @@ public class Kernel32LibUtil {
     }
 
     return Native.toString(lpBuffer);
+  }
+
+  public static String getVersionInfo() {
+
+    Kernel32Lib._OSVERSIONINFO OSVERSIONINFO = new _OSVERSIONINFO();
+    OSVERSIONINFO.szCSDVersion = new char[128];
+    OSVERSIONINFO.dwOSVersionInfoSize = OSVERSIONINFO.size();
+
+    if (!Kernel32Lib.INSTANCE.GetVersionEx(OSVERSIONINFO)) {
+      throw new RuntimeException("Failed to retrieve extended OS version info using win32 api");
+    }
+
+    return "major version number - " + OSVERSIONINFO.dwMajorVersion + "; minor version number - "
+        + OSVERSIONINFO.dwMinorVersion + "; build number - " + OSVERSIONINFO.dwBuildNumber
+        + "; operating system platform - " + OSVERSIONINFO.dwPlatformId + "; latest Service Pack "
+        + "installed - " + Native.toString(OSVERSIONINFO.szCSDVersion);
   }
 }

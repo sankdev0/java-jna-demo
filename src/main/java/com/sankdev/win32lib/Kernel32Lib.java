@@ -1,6 +1,7 @@
 package com.sankdev.win32lib;
 
 import com.sun.jna.Native;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
@@ -16,6 +17,17 @@ public interface Kernel32Lib extends StdCallLibrary {
       W32APIOptions.UNICODE_OPTIONS);
 
   // define methods that mirror the functions in the target library
+
+  @Structure.FieldOrder({"dwOSVersionInfoSize", "dwMajorVersion", "dwMinorVersion",
+      "dwBuildNumber", "dwPlatformId", "szCSDVersion"})
+  class _OSVERSIONINFO extends Structure{
+    public int dwOSVersionInfoSize; // should be set to the size of this structure
+    public int dwMajorVersion;
+    public int dwMinorVersion;
+    public int dwBuildNumber;
+    public int dwPlatformId;
+    public char[] szCSDVersion; // always 128 length
+  }
 
   /**
    * Получает NetBIOS имя локального компьютера в буфер lpBuffer.
@@ -41,8 +53,9 @@ public interface Kernel32Lib extends StdCallLibrary {
    * Получет путь к каталогу Windows компьютера в буфер lpBuffer. Каталог Windows - это каталог, в
    * котором некоторые устаревшие приложения хранят файлы инициализации и справки. Чаще всего, это
    * папка Windows на системном диске.
+   *
    * @param lpBuffer Указатель на буфер, в который будет получен путь.
-   * @param uSize Максимальный размер буфера в TCHAR. Должно быть указано MAX_PATH.
+   * @param uSize    Максимальный размер буфера в TCHAR. Должно быть указано MAX_PATH.
    * @return Если функция завершается успешно, возвращаемое значение - количество записанных в буфер
    * символов в TCAHR, не включая завершающий нулевой символ. В случае сбоя возвращаемое значение
    * равно нулю. Чтобы получить расширенную информацию об ошибке, вызовите GetLastError.
@@ -55,11 +68,12 @@ public interface Kernel32Lib extends StdCallLibrary {
   /**
    * Получет путь к системному компьютера в буфер lpBuffer. Системный каталог содержит системные
    * файлы, такие как библиотеки динамической компоновки и драйверы.
+   *
    * @param lpBuffer Указатель на буфер для получения пути. Этот путь не заканчивается обратной
    *                 косой чертой, если системный каталог не является корневым. Например, если
    *                 системный каталог называется Windows \ System32 на диске C, путь к системному
    *                 каталогу, полученному этой функцией, будет C: \ Windows \ System32.
-   * @param uSize Максимальный размер буфера в TCHAR.
+   * @param uSize    Максимальный размер буфера в TCHAR.
    * @return Если функция завершается успешно, возвращаемое значение - это длина строки,
    * скопированной в буфер, в TCHAR, не включая завершающий нулевой символ. В случае сбоя
    * возвращаемое значение равно нулю. Чтобы получить расширенную информацию об ошибке, вызовите
@@ -73,20 +87,33 @@ public interface Kernel32Lib extends StdCallLibrary {
 
   /**
    * Получает путь к каталогу, предназначенному для временных файлов.
+   *
    * @param nBufferLength Размер строкового буфера, идентифицированного lpBuffer, в TCHAR.
-   * @param lpBuffer Указатель на строковый буфер, который принимает строку с завершающим нулем,
-   *                 определяющую путь к временному файлу. Возвращаемая строка заканчивается
-   *                 обратной косой чертой, например, «C: \ TEMP \».
+   * @param lpBuffer      Указатель на строковый буфер, который принимает строку с завершающим
+   *                      нулем, определяющую путь к временному файлу. Возвращаемая строка
+   *                      заканчивается обратной косой чертой, например, «C: \ TEMP \».
    * @return Если функция завершается успешно, возвращаемое значение представляет собой длину в
    * TCHAR строки, скопированной в lpBuffer, не включая завершающий нулевой символ. Если
    * возвращаемое значение больше nBufferLength, возвращаемое значение - это длина в TCHAR буфера,
-   * необходимого для хранения пути.
-   * Если функция не работает, возвращаемое значение равно нулю. Чтобы получить расширенную
-   * информацию об ошибке, вызовите GetLastError.
-   * Максимально возможное возвращаемое значение - MAX_PATH + 1 (261).
+   * необходимого для хранения пути. Если функция не работает, возвращаемое значение равно нулю.
+   * Чтобы получить расширенную информацию об ошибке, вызовите GetLastError. Максимально возможное
+   * возвращаемое значение - MAX_PATH + 1 (261).
    */
   int GetTempPathW(
-      int  nBufferLength,
+      int nBufferLength,
       char[] lpBuffer
   );
+
+  /**
+   * Функция GetVersionEx получает расширенную информацию о версии операционной системы, которая
+   * работает в данный момент.
+   *
+   * @param lpVersionInfo Указатель на структуру данных OSVERSIONINFO, которую функция заполняется
+   *                      информацией о версии операционной системы.
+   * @return Если функция завершается успешно, возвращаемое значение - ненулевое значение. Если
+   * функция не работает, возвращаемое значение - ноль. Чтобы продлить информацию об ошибке,
+   * вызовите GetLastError. Функция не работает, если вы укажите недопустимое значение для члена
+   * dwOSVersionInfoSize из структуры OSVERSIONINFO или OSVERSIONINFOEX.
+   */
+  boolean GetVersionEx(_OSVERSIONINFO lpVersionInfo);
 }

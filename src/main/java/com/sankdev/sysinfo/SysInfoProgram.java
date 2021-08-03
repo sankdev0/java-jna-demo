@@ -16,5 +16,7 @@ public class SysInfoProgram {
     System.out.println("Путь к системному каталогу: " + Kernel32LibUtil.getSystemDirectory());
 
     System.out.println("Путь к каталогу временных файлов: " + Kernel32LibUtil.getTempPath());
+
+    System.out.println("Информация о версии ОС: " + Kernel32LibUtil.getVersionInfo());
   }
 }
