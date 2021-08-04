@@ -2,6 +2,7 @@ package com.sankdev.sysinfo;
 
 import com.sankdev.win32lib.Advapi32LibUtil;
 import com.sankdev.win32lib.Kernel32LibUtil;
+import com.sankdev.win32lib.User32LibUtil;
 
 public class SysInfoProgram {
 
@@ -18,5 +19,9 @@ public class SysInfoProgram {
     System.out.println("Путь к каталогу временных файлов: " + Kernel32LibUtil.getTempPath());
 
     System.out.println("Информация о версии ОС: " + Kernel32LibUtil.getVersionInfo());
+
+    System.out.println();
+
+    User32LibUtil.printSystemMetrics();
   }
 }
